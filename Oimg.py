@@ -6,6 +6,7 @@ frame = np.uint8(frame)
 
 def CopyRight(x,y):
     cv2.putText(res,(str(x) + " "+ str(y)),(x,y+30),2, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    #Копировать правильно ©
 def nothing(x):
     pass
 cv2.namedWindow("frame")
@@ -23,7 +24,7 @@ cv2.createTrackbar('area', 'frame', 1, 500000, nothing)
 while(1):
 
     # Take each frame
-    MIN_area = cv2.getTrackbarPos('area','frame')
+    MIN_area = cv2.getTrackbarPos('area', 'frame')
     h1 = cv2.getTrackbarPos('H1', 'frame')
     s1 = cv2.getTrackbarPos('S1', 'frame')
     v1 = cv2.getTrackbarPos('V1', 'frame')
