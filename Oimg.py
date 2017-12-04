@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-frame = cv2.imread("bals.png")
+frame = cv2.imread("bal1s.jpg")
 frame = np.uint8(frame)
 
 def CopyRight(x,y):
@@ -20,11 +20,13 @@ cv2.createTrackbar('a', 'frame', 1, 255, nothing)
 cv2.createTrackbar('b', 'frame', 1, 255, nothing)
 cv2.createTrackbar('d', 'frame', 1, 255, nothing)
 cv2.createTrackbar('c', 'frame', 1, 255, nothing)
-cv2.createTrackbar('area', 'frame', 1, 500000, nothing)
+cv2.createTrackbar('marea', 'frame', 1, 100000, nothing)
+cv2.createTrackbar('mxarea', 'frame', 1, 1000000, nothing)
 while(1):
 
     # Take each frame
-    MIN_area = cv2.getTrackbarPos('area', 'frame')
+    MIN_area = cv2.getTrackbarPos('marea', 'frame')
+    MAx_area = cv2.getTrackbarPos('mxarea', 'frame')
     h1 = cv2.getTrackbarPos('H1', 'frame')
     s1 = cv2.getTrackbarPos('S1', 'frame')
     v1 = cv2.getTrackbarPos('V1', 'frame')
@@ -65,23 +67,27 @@ while(1):
 
     mask = cv2.dilate(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(a,b)), iterations = 1)
     mask = cv2.erode(mask,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(c,d)),iterations= 1)
+
+
     res = cv2.bitwise_and(frame, frame, mask=mask)
     ret, thresh = cv2.threshold(frame, 127, 255, 0)
-    _, contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     refArea = 0
     index = 0
-    numOjects = len(_)
-    print(cv2.getWindowProperty('res',cv2.WND_PROP_ASPECT_RATIO))
+    numOjects = len(contours)
+    print(len(_),len(contours))
+    #print(cv2.getWindowProperty('res',cv2.WND_PROP_ASPECT_RATIO))
 
     for index in range(numOjects):
         cnt = contours[index]
         M = cv2.moments(cnt)
         area = M['m00']
-        if area> refArea:
+        if area> MIN_area and area<MAx_area:
             cx = int(M['m10'] / area)
             cy = int(M['m01'] / area)
             refArea = area
-            cv2.drawContours(res, contours, -1, (0, 255, 0), 3)
+            cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
             cv2.putText(res,"yeey",(0,50),2,1,(255,255,255),2,cv2.LINE_AA)
             CopyRight(cx,cy)
     # Bitwise-AND mask and original image
