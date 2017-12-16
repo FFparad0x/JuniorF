@@ -12,7 +12,8 @@ def CopyRight(x, y):
 def nothing(x):
     pass
 
-
+#realLenght = float(input())
+#realHeight = float(input())
 cv2.namedWindow("frame")
 cv2.createTrackbar('H1', 'frame', 0, 255, nothing)
 cv2.createTrackbar('S1', 'frame', 60, 255, nothing)
@@ -68,6 +69,7 @@ while (1):
 
     # Threshold the HSV image to get only blue colors
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    mask = cv2.GaussianBlur(mask, (5, 5), 0)
 
     mask = cv2.dilate(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (a, b)), iterations=1)
     mask = cv2.erode(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (c, d)), iterations=1)
@@ -75,7 +77,7 @@ while (1):
     res = cv2.bitwise_and(frame, frame, mask=mask)
     ret, thresh = cv2.threshold(frame, 127, 255, 0)
 
-    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     refArea = 0
     index = 0
     numOjects = len(contours)
@@ -101,7 +103,6 @@ while (1):
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
     cv2.imshow('res', res)
-    cv2.resizeWindow('res', 1200, 1200)
     k = cv2.waitKey(5) & 0xFF
 
     if k == 27:

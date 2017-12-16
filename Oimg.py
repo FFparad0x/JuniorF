@@ -28,7 +28,6 @@ cv2.createTrackbar('c', 'frame', 1, 255, nothing)
 cv2.createTrackbar('marea', 'frame', 1, 100000, nothing)
 cv2.createTrackbar('mxarea', 'frame', 1, 1000000, nothing)
 while (1):
-    _, frame = cap.read()
     # Take each frame
     MIN_area = cv2.getTrackbarPos('marea', 'frame')
     MAx_area = cv2.getTrackbarPos('mxarea', 'frame')
@@ -75,7 +74,7 @@ while (1):
     res = cv2.bitwise_and(frame, frame, mask=mask)
     ret, thresh = cv2.threshold(frame, 127, 255, 0)
 
-    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    _, contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     refArea = 0
     index = 0
     numOjects = len(contours)
