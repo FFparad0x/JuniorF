@@ -13,8 +13,8 @@ def nothing(x):
     pass
 
 
-print("Ширина/Высота")
-rWidth = float(input())
+print("Ширина и Высота ")
+rWidth, rHeight = float(input()), float(input())
 print("Фокусное расстояние")
 fLength = float(input())
 
@@ -86,6 +86,7 @@ while (1):
     index = 0
     numOjects = len(contours)
     pWidth = 0
+    obj = 0
     # print(cv2.getWindowProperty('res',cv2.WND_PROP_ASPECT_RATIO))
 
     for index in range(numOjects):
@@ -99,17 +100,29 @@ while (1):
             #cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
             cv2.putText(res, "yeey", (0, 50), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
             CopyRight(cx, cy)
-            x, y, w, h = cv2.boundingRect(cnt)
-            pWidth = w
-            cv2.rectangle(res, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            x = cv2.minAreaRect(cnt)
+            print(int(x[1][0]), int(x[1][1]))
+            box = cv2.boxPoints(x)
+            box = np.int0(box)
+            cv2.drawContours(res, [box], 0, (0, 0, 255), 2)
+            # pWidth = w
+            # cv2.rectangle(res, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            obj = 1
+        else:
+            obj = 0
     # Bitwise-AND mask and original image
-    if pWidth == 0:
-        Distance = "Unknown"
+    if obj == 1:
+        pWidth = x[1][0]
+        if x[1][0] <= x[1][1]:
+            Distance = (rWidth * fLength) / pWidth
+        else:
+            Distance = (rHeight * fLength) / pWidth
+        print(Distance)
     else:
-        Distance = (rWidth * fLength) / pWidth
-    print(Distance)
+        print("Не удалось найти объект")
+    # print(Distance)
     cv2.imshow('frame', frame)
-    cv2.imshow('mask', mask)
+    #cv2.imshow('mask', mask)
     cv2.imshow('res', res)
     k = cv2.waitKey(5) & 0xFF
 

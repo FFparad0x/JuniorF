@@ -111,12 +111,12 @@ while (1):
             # cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
             cv2.putText(res, "yeey", (0, 50), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
             CopyRight(cx, cy)
-            x, y, w, h = cv2.boundingRect(cnt)
-            pWidth = w
-            cv2.rectangle(res, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            x = cv2.minAreaRect(cnt)
+            pWidth = x[1][0]
+            box = cv2.boxPoints(x)
+            box = np.int0(box)
+            cv2.drawContours(res, [box], 0, (0, 0, 255), 2)
     # Bitwise-AND mask and original image
-
-
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
     cv2.imshow('res', res)
