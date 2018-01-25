@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
+import time
 
-cap = cv2.VideoCapture()
+cap = cv2.VideoCapture(2)
 
-
+ix, iy = -1, -1
 def CopyRight(x, y):
     cv2.putText(res, (str(x) + " " + str(y)), (x, y + 30), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
     # Копировать правильно ©
@@ -32,7 +33,7 @@ cv2.createTrackbar('c', 'frame', 1, 255, nothing)
 cv2.createTrackbar('marea', 'frame', 1, 100000, nothing)
 cv2.createTrackbar('mxarea', 'frame', 1, 1000000, nothing)
 
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture(2)
 
 
 def get_image():
@@ -40,16 +41,20 @@ def get_image():
     return im
 
 
-for i in range(30):
-    temp = get_image()
-print("Taking image...")
+def get_coord(event, x, y, flags, param):
+    global ix, iy
+    if event == cv2.EVENT_LBUTTONDOWN:
+        ix, iy = x, y
+        print("AAAA", x, y)
+    elif event == cv2.EVENT_MOUSEMOVE:
+        print("BBBB", x, y)
 
-frame = get_image()
-file = "test_image.png"
-del (camera)
-frame = np.uint8(frame)
 
+cv2.namedWindow('res')
+cv2.setMouseCallback('res', get_coord)
 while (1):
+    retval, frame = camera.read()
+    frame = np.uint8(frame)
     # Take each frame
     MIN_area = cv2.getTrackbarPos('marea', 'frame')
     MAx_area = cv2.getTrackbarPos('mxarea', 'frame')
@@ -111,11 +116,13 @@ while (1):
             # cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
             cv2.putText(res, "yeey", (0, 50), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
             CopyRight(cx, cy)
-            x = cv2.minAreaRect(cnt)
-            pWidth = x[1][0]
-            box = cv2.boxPoints(x)
+            x_x = cv2.minAreaRect(cnt)
+            pWidth = x_x[1][0]
+            box = cv2.boxPoints(x_x)
             box = np.int0(box)
             cv2.drawContours(res, [box], 0, (0, 0, 255), 2)
+            print("F = ", int((pWidth * rDistance) / rWidth), int((558 * rWidth) / pWidth))
+
     # Bitwise-AND mask and original image
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
@@ -124,5 +131,7 @@ while (1):
 
     if k == 27:
         break
-print("F = ", (pWidth * rDistance) / rWidth)
+
 cv2.destroyAllWindows()
+del (camera)
+cap.release()

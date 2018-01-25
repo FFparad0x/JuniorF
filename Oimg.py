@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-frame = cv2.imread("bal1s.jpg")
+frame = cv2.imread("dead.jpg")
 frame = np.uint8(frame)
 
 
@@ -15,41 +15,42 @@ def nothing(x):
 
 
 cv2.namedWindow("frame")
-cv2.createTrackbar('H1', 'frame', 0, 255, nothing)
-cv2.createTrackbar('S1', 'frame', 60, 255, nothing)
-cv2.createTrackbar('V1', 'frame', 98, 255, nothing)
-cv2.createTrackbar('H2', 'frame', 255, 255, nothing)
-cv2.createTrackbar('S2', 'frame', 255, 255, nothing)
-cv2.createTrackbar('V2', 'frame', 255, 255, nothing)
-cv2.createTrackbar('a', 'frame', 1, 255, nothing)
-cv2.createTrackbar('b', 'frame', 1, 255, nothing)
-cv2.createTrackbar('d', 'frame', 1, 255, nothing)
-cv2.createTrackbar('c', 'frame', 1, 255, nothing)
-cv2.createTrackbar('marea', 'frame', 1, 100000, nothing)
-cv2.createTrackbar('mxarea', 'frame', 1, 1000000, nothing)
+cv2.namedWindow("res")
+cv2.createTrackbar('H1', 'res', 0, 255, nothing)
+cv2.createTrackbar('S1', 'res', 60, 255, nothing)
+cv2.createTrackbar('V1', 'res', 98, 255, nothing)
+cv2.createTrackbar('H2', 'res', 255, 255, nothing)
+cv2.createTrackbar('S2', 'res', 255, 255, nothing)
+cv2.createTrackbar('V2', 'res', 255, 255, nothing)
+cv2.createTrackbar('a', 'res', 1, 255, nothing)
+cv2.createTrackbar('b', 'res', 1, 255, nothing)
+cv2.createTrackbar('d', 'res', 1, 255, nothing)
+cv2.createTrackbar('c', 'res', 1, 255, nothing)
+cv2.createTrackbar('marea', 'res', 1, 100000, nothing)
+cv2.createTrackbar('mxarea', 'res', 1, 1000000, nothing)
 while (1):
-    # Take each frame
-    MIN_area = cv2.getTrackbarPos('marea', 'frame')
-    MAx_area = cv2.getTrackbarPos('mxarea', 'frame')
-    h1 = cv2.getTrackbarPos('H1', 'frame')
-    s1 = cv2.getTrackbarPos('S1', 'frame')
-    v1 = cv2.getTrackbarPos('V1', 'frame')
-    v2 = cv2.getTrackbarPos('H2', 'frame')
-    s2 = cv2.getTrackbarPos('S2', 'frame')
-    h2 = cv2.getTrackbarPos('V2', 'frame')
-    a = cv2.getTrackbarPos('a', 'frame')
-    b = cv2.getTrackbarPos("b", "frame")
-    d = cv2.getTrackbarPos('d', 'frame')
-    c = cv2.getTrackbarPos("c", "frame")
+    # Take each res
+    MIN_area = cv2.getTrackbarPos('marea', 'res')
+    MAx_area = cv2.getTrackbarPos('mxarea', 'res')
+    h1 = cv2.getTrackbarPos('H1', 'res')
+    s1 = cv2.getTrackbarPos('S1', 'res')
+    v1 = cv2.getTrackbarPos('V1', 'res')
+    v2 = cv2.getTrackbarPos('H2', 'res')
+    s2 = cv2.getTrackbarPos('S2', 'res')
+    h2 = cv2.getTrackbarPos('V2', 'res')
+    a = cv2.getTrackbarPos('a', 'res')
+    b = cv2.getTrackbarPos("b", "res")
+    d = cv2.getTrackbarPos('d', 'res')
+    c = cv2.getTrackbarPos("c", "res")
     if a == 0:
         a = 1
-    b = cv2.getTrackbarPos("b", "frame")
+    b = cv2.getTrackbarPos("b", "res")
     if b == 0:
         b = 1
-    d = cv2.getTrackbarPos('d', 'frame')
+    d = cv2.getTrackbarPos('d', 'res')
     if d == 0:
         d = 1
-    c = cv2.getTrackbarPos("c", "frame")
+    c = cv2.getTrackbarPos("c", "res")
     if c == 0:
         c = 1
 
@@ -78,7 +79,7 @@ while (1):
     refArea = 0
     index = 0
     numOjects = len(contours)
-    print(len(_), len(contours))
+    # print(len(_), len(contours))
     # print(cv2.getWindowProperty('res',cv2.WND_PROP_ASPECT_RATIO))
 
     for index in range(numOjects):
@@ -89,18 +90,29 @@ while (1):
             cx = int(M['m10'] / area)
             cy = int(M['m01'] / area)
             refArea = area
-            #cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
-            cv2.putText(res, "yeey", (0, 50), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            CopyRight(cx, cy)
-            x, y, w, h = cv2.boundingRect(cnt)
-            cv2.rectangle(res, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    # Bitwise-AND mask and original image
+            if area > MIN_area and area < MAx_area:
+                cx = int(M['m10'] / area)
+                cy = int(M['m01'] / area)
+                refArea = area
+                # cv2.drawContours(res, contours[index], -1, (0, 255, 0), 3)
+                cv2.putText(frame, "object detected", (0, 50), 2, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                CopyRight(cx, cy)
+                x = cv2.minAreaRect(cnt)
+                print(int(x[1][0]), int(x[1][1]))
+                box = cv2.boxPoints(x)
+                box = np.int0(box)
+                cv2.drawContours(frame, [box], 0, (0, 0, 255), 2)
+                # pWidth = w
+                # cv2.rectangle(res, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                obj = 1
+
 
 
     cv2.imshow('frame', frame)
+
     cv2.imshow('mask', mask)
     cv2.imshow('res', res)
-    cv2.resizeWindow('res', 1200, 1200)
+    #cv2.resizeWindow('res', 1200, 1200)
     k = cv2.waitKey(5) & 0xFF
 
     if k == 27:
